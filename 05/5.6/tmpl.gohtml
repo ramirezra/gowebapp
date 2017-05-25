@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="text/html" http-equiv="content-type">
+    <title>Go Web Programming</title>
+  </head>
+  <body>
+    <ul>
+      {{ range . }}
+      <li>{{ . }}</li>
+      {{ else }}
+      <li>Nothing to Show</li>
+      {{ end }}
+    </ul>
+  </body>
+</html>
