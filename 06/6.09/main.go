@@ -59,11 +59,21 @@ func (post *Post) Create() {
 	return
 }
 
+// Get post
+func GetPost(id int) (post Post, err error) {
+	post = Post{}
+	err = DB.QueryRow("SELECT id, content, author FROM gwp where id=$1", id).Scan(&post.Id, &post.Content, &post.Author)
+	return
+}
+
 func main() {
 	post := Post{Content: "Hello World!", Author: "Robinson Ramirez"}
 	fmt.Println(post)
 	post.Create()
 	fmt.Println(post)
+
+	readPost, _ := GetPost(post.Id)
+	fmt.Println(readPost)
 
 	http.HandleFunc("/", index)
 	http.ListenAndServe(":8080", nil)

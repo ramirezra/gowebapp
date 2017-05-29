@@ -59,11 +59,63 @@ func (post *Post) Create() {
 	return
 }
 
+// GetPost
+func GetPost(id int) (post Post, err error) {
+	post = Post{}
+	err = DB.QueryRow("SELECT id, content, author FROM gwp where id=$1", id).Scan(&post.Id, &post.Content, &post.Author)
+	return
+}
+
+// UpdatePost
+func (post *Post) UpdatePost() (err error) {
+	_, err = DB.Exec("UPDATE gwp SET content = $2, author = $3 where id = $1", post.Id, post.Content, post.Author)
+	return
+}
+
+// DeletePost
+func (post *Post) DeletePost() (err error) {
+	_, err = DB.Exec("DELETE FROM gwp WHERE id = $1", post.Id)
+	return
+}
+
+// GetAllPosts
+func GetAllPosts(limit int) (posts []Post, err error) {
+	rows, err := DB.Query("SELECT id, content, author FROM gwp limit $1", limit)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		post := Post{}
+		err = rows.Scan(&post.Id, &post.Content, &post.Author)
+		if err != nil {
+			return
+		}
+		posts = append(posts, post)
+	}
+	rows.Close()
+	return
+}
+
 func main() {
+	// Define Post
 	post := Post{Content: "Hello World!", Author: "Robinson Ramirez"}
 	fmt.Println(post)
+
+	// Create Post
 	post.Create()
 	fmt.Println(post)
+
+	// Get Post
+	readPost, _ := GetPost(post.Id)
+	fmt.Println(readPost)
+
+	// Modify Post
+	readPost.Content = "Hola Mundo!"
+	readPost.Author = "Pedro Almodovar"
+	readPost.UpdatePost()
+	fmt.Println(readPost)
+	// Delete Post
+	readPost.DeletePost()
 
 	http.HandleFunc("/", index)
 	http.ListenAndServe(":8080", nil)
